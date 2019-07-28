@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.web.bind.annotation.*;
 import org.example.webapp.constants.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,9 +117,20 @@ public class GameDemoApplication implements ErrorController {
 			return getResponse(Constants.INVALID_END_NODE, state.get(Constants.PLAYER).toString(), null, null, msg);
 		}
 		
+		//If not available game over
+		if(isNodeAvailable()){
+				pointsAlreadyMet.put((Point) state.get(Constants.STATE_START), point);
+				findNotVisitedNode();
+				Point start = (Point) state.get(Constants.STATE_START);
+				// end = (Point) state.get(Constants.STATE_END);
+				msg = "Player wins.";
+				return getResponse(Constants.GAME_OVER, state.get(Constants.PLAYER).toString(), start, point, msg);
+		}
+		
 		// if user is selected proper adjuscent node
 		if (adjuscentPoint.contains(point)) {
 			pointsAlreadyMet.put((Point) state.get(Constants.STATE_START), point);
+			findNotVisitedNode();
 			Point start = (Point) state.get(Constants.STATE_START);
 			// end = (Point) state.get(Constants.STATE_END);
 			msg = "Select a second node to complete the line.";
@@ -192,5 +204,28 @@ public class GameDemoApplication implements ErrorController {
 			}
 		}
 		
+	}
+	
+	private void findNotVisitedNode() {
+		adjuscentPoints.put((Point) state.get(Constants.STATE_NODE_FIRST),findNotVisitedNode((Point) state.get(Constants.STATE_NODE_FIRST)));
+		adjuscentPoints.put((Point) state.get(Constants.STATE_NODE_FIRST),findNotVisitedNode((Point) state.get(Constants.STATE_NODE_LAST)));
+	}
+	
+	private List<Point> findNotVisitedNode(Point node) {
+		List<Point> adjuscentPoint = (List<Point>) adjuscentPoints.get(node);
+		List<Point> availableNodes =  new ArrayList<Point>();
+		for(Point p : adjuscentPoint) {
+			if(pointsAlreadyMet.containsKey(p) || pointsAlreadyMet.containsValue(p)){
+				
+			}else {
+				if(!node.equals(p))
+					availableNodes.add(p);
+			}
+		}
+		return availableNodes;
+	}
+	
+	private boolean isNodeAvailable() {
+		return findNotVisitedNode((Point) state.get(Constants.STATE_END)).isEmpty()?true:false;
 	}
 }
