@@ -15,5 +15,7 @@ public class Constants {
     public static String STATE_CLICK_COUNT = "CLICK_COUNT";
     public static String STATE_NODE_FIRST = "FIRST_NODE";
     public static String STATE_NODE_LAST = "LAST_NODE";
+    public static String IS_FIRST_NODE_CLICKED = "IS_FIRST_NODE_CLICKED";
+    public static String IS_FIRST_MOVE = "IS_FIRST_MOVE";
 
 }

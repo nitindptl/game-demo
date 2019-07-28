@@ -84,23 +84,26 @@ public class GameDemoApplication implements ErrorController {
 		state.put(Constants.STATE_CLICK_COUNT, clickCount);
 		
 		if (clickCount % 2 == 0) {
+			state.put(Constants.IS_FIRST_MOVE, false);
 			state.put(Constants.STATE_END, point);
-			state.put(Constants.STATE_NODE_LAST, point);
+			updateFirstLastNode(state,point);
 		} else {
+			state.put(Constants.IS_FIRST_MOVE, true);
 			// if user already selected 1 line and tries to select another point then it
 			// should be either START or END should be clicked first
-			if (!pointsAlreadyMet.isEmpty()) {
-				if(first.equals(point))
-					state.put(Constants.STATE_NODE_FIRST, point);
-			}else if (!pointsAlreadyMet.isEmpty() && (!first.equals(point) || !last.equals(point))) {
-				clickCount = (Integer) state.get(Constants.STATE_CLICK_COUNT) - 1;
-				state.put(Constants.STATE_CLICK_COUNT, clickCount);
-				// invalid move!!
-				msg = "Not a valid starting position.";
-				return getResponse(Constants.INVALID_START_NODE, state.get(Constants.PLAYER).toString(), first, last, msg);
-			}
+			if (!pointsAlreadyMet.isEmpty() && (first.equals(point) || last.equals(point))) {
+				updateFirstLastNode(state,point);
+			} else if (!pointsAlreadyMet.isEmpty() && (!first.equals(point) || !last.equals(point))) {
+					clickCount = (Integer) state.get(Constants.STATE_CLICK_COUNT) - 1;
+					state.put(Constants.STATE_CLICK_COUNT, clickCount);
+					// invalid move!!
+					msg = "Not a valid starting position.";
+					return getResponse(Constants.INVALID_START_NODE, state.get(Constants.PLAYER).toString(), null, null, msg);
+				}
 			state.put(Constants.STATE_START, point);
-		}
+			}
+			
+			
 
 		// if user selected the start point but it's not an adjuscent then throw error
 		// if user selected node is not adjuscent then should be INVALID_NODE
@@ -171,4 +174,23 @@ public class GameDemoApplication implements ErrorController {
 		return "/error";
 	}
 
+	private void updateFirstLastNode(Map<String, Object> state,Point point) {
+		Point first = (Point) state.get(Constants.STATE_NODE_FIRST);
+		Point last = (Point) state.get(Constants.STATE_NODE_LAST);
+		
+		if(point.equals(first)) {
+			state.put(Constants.IS_FIRST_NODE_CLICKED, true);
+		}else if(point.equals(last)) {
+			state.put(Constants.IS_FIRST_NODE_CLICKED, false);
+		}
+		//If the move sencod move then only update First/last node
+		if((Boolean)state.get(Constants.IS_FIRST_MOVE) == false) {
+			if((Boolean)state.get(Constants.IS_FIRST_NODE_CLICKED) == true) {
+				state.put(Constants.STATE_NODE_FIRST, point);
+			} else {
+				state.put(Constants.STATE_NODE_LAST, point);
+			}
+		}
+		
+	}
 }
