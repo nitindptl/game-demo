@@ -22,8 +22,8 @@ public class GetAdjuscentNodeService {
         Map<Point, List<Point>> pointsWithKey = new HashMap<>();
         for(int i = 0; i<4; i++) {
             for(int j = 0; j<4; j++) {
-            	System.out.println(i+","+j+"=="+getAdjuscentPoints(i, j));
-                pointsWithKey.put(new Point(i,j), getAdjuscentPoints(i, j));
+            	//System.out.println(i+","+j+"=="+getAdjuscentPoints(j, i));
+                pointsWithKey.put(new Point(j,i), getAdjuscentPoints(j, i));
             }
         }
         return pointsWithKey;
